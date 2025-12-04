@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#667eea">
+    <meta name="description" content="Track your license keys expiration time">
+    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32.png">
+    <title>Luarmor Key Tracker</title>
+</head>
+<body>
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="spinner"></div>
+        <div class="loading-text">Connecting to Firebase...</div>
+    </div>
+
+    <div class="container">
+        <div class="install-prompt" id="installPrompt">
+            <span>📱 Install aplikasi ke desktop untuk akses lebih cepat!</span>
+            <button id="installBtn">Install</button>
+        </div>
+
+        <h1>
+            🔑 Luarmor Key Tracker
+            <span class="status-badge offline" id="statusBadge">Offline</span>
+        </h1>
+        
+        <!-- Account Management -->
+        <div class="section">
+            <div class="section-title">👤 Manage Akun</div>
+            <div class="account-input-group">
+                <input type="text" id="accountInput" placeholder="Nama akun (Main, Alt, Work)">
+                <button id="addAccountBtn">Tambah</button>
+            </div>
+            <div class="account-list" id="accountList"></div>
+            <div class="action-buttons">
+                <button id="exportBtn" class="action-btn export">💾 Export</button>
+                <button id="importBtn" class="action-btn import">📥 Import</button>
+            </div>
+        </div>
+
+        <!-- Add Key -->
+        <div class="section">
+            <div class="section-title">➕ Tambah Key</div>
+            <div class="form-group">
+                <label>Akun</label>
+                <select id="accountSelect">
+                    <option value="">-- Pilih Akun --</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Key / License</label>
+                <input type="text" id="keyInput" placeholder="Masukkan key lo disini...">
+            </div>
+            <div class="form-group">
+                <label>Durasi</label>
+                <div class="duration-options">
+                    <button class="duration-btn active" data-hours="24">24 Jam</button>
+                    <button class="duration-btn" data-hours="48">48 Jam</button>
+                    <button class="duration-btn" data-hours="custom">Custom</button>
+                </div>
+            </div>
+            <div class="form-group" id="customTimeInput" style="display: none;">
+                <label>Sisa Waktu</label>
+                <div style="display: flex; gap: 10px;">
+                    <div style="flex: 1;">
+                        <input type="number" id="customHours" placeholder="Jam" min="0" max="999">
+                        <small>Jam</small>
+                    </div>
+                    <div style="flex: 1;">
+                        <input type="number" id="customMinutes" placeholder="Menit" min="0" max="59">
+                        <small>Menit</small>
+                    </div>
+                </div>
+            </div>
+            <button class="add-btn" id="addKeyBtn">Tambah Key</button>
+        </div>
+
+        <!-- Keys List -->
+        <div class="section">
+            <div class="section-title">📋 Daftar Key</div>
+            <div class="list-header">
+                <div class="filter-bar" id="filterBar"></div>
+                <div class="list-actions">
+                    <button id="deleteExpiredBtn" class="btn-danger">🗑️ Hapus Expired</button>
+                    <button id="clearAllBtn" class="btn-secondary">Clear All</button>
+                </div>
+            </div>
+            <div id="keysList" class="keys-list"></div>
+        </div>
+    </div>
+
+    <script type="module" src="/app.js"></script>
+
+<script>
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/service-worker.js')
+    .then(reg => {
+      if (reg.waiting) {
+        reg.waiting.postMessage("skipWaiting");
+      }
+
+      reg.addEventListener('updatefound', () => {
+        const worker = reg.installing;
+        worker.addEventListener('statechange', () => {
+          if (worker.state === 'installed') {
+            worker.postMessage("skipWaiting");
+          }
+        });
+      });
+    });
+}
+</script>
+</body>
+</html>
